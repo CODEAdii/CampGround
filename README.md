@@ -30,5 +30,8 @@ Bootstrap
 Contributing
 Contributions are welcome! Fork the repository, create a branch, commit your changes, and submit a pull request.
 
+
+Note: Intsall all dependencies to run the code
+
 License
 This project is licensed under the MIT License.
