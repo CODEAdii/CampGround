@@ -1,0 +1,134 @@
+<% layout('layout/boilerplate')%>
+<link rel="stylesheet" href="/stylesheets/star.css">
+
+
+<% function mapRatingToTextAndSmiley(rating) {
+  let text, smiley;
+  switch (rating) {
+    case 1:
+      text = "Terrible";
+      smiley = "😞";
+      break;
+    case 2:
+      text = "Very Bad";
+      smiley = "😟";
+      break;
+    case 3:
+      text = "Bad";
+      smiley = "😐";
+      break;
+    case 4:
+      text = "Good";
+      smiley = "😊";
+      break;
+    case 5:
+      text = "Excellent";
+      smiley = "😄";
+      break;
+    default:
+      text = "Unknown";
+      smiley = "😐";
+  }
+  return { text, smiley };
+} %>
+
+
+
+
+<div class="row">
+    <div class="col-6 ">
+
+        <div class="card mb-3" style="width: 20rem;">
+            <img src="<%=campground.image  %>" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title"><%=campground.title %></h5>
+              <p class="card-text"><%=campground.description %>.</p>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item text-muted"><%=campground.location%></li>
+              <li class="list-group-item ">Submitted by <%=campground.author.username%></li>
+              <li class="list-group-item">$<%=campground.price%>/night</li>
+            </ul>
+            <%if(currentUser && campground.author.equals(currentUser._id)) { %>
+            <div class="card-body">
+              <a class="btn btn-warning"href="/campgrounds/<%=campground._id %>/edit" class="card-link">
+                          Edit</a>
+              <form class="d-inline"action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+                <button class="btn btn-danger" >DELETE</button>
+            </form>
+            </div>
+            <% } %>
+
+            <div class="card-footer text-muted">
+                2 days ago
+            </div>
+          </div>
+       
+    </div> 
+      <div class="col-6">
+      <% if(currentUser){%>
+      <h2>Leave a Review</h2>
+      <form action="/campgrounds/<%=campground._id%>/reviews" method="POST" class="mb-3 validated-form"  novalidate>
+
+        <!-- <div class="mb-3">
+          <label class="form-label" for="rating">Rating</label>
+          <input class="form-range" type="range" min=1 max=5 name="review[rating]" id="rating">
+        </div> -->
+
+        <div class="mb-3">
+
+        <fieldset class="starability-basic">
+          <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
+          <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+        </fieldset>
+       </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="body">Review</label>
+          <textarea class="form-control" name="review[body]" id="body" cols="20" rows="3" required></textarea>
+          <div class="valid-feedback">
+            Looks Good!
+          </div>
+        </div>
+      <button class="btn btn-success">Submit</button>
+      </form>
+      <% } %>
+      <% for(let review of campground.reviews){%>
+        <div class="card mb-3">
+             <div class = "card-body">
+              <h5 class="card-subtitle mb-2 text-muted">By <%= (review.author && 
+              review.author.username) ? review.author.username : 'Anonymous' %></h5>
+
+              <p class="starability-result" data-rating=<%= review.rating %>>
+                Rated: 3 stars
+              </p>
+              <h5><%= mapRatingToTextAndSmiley(review.rating).text %>
+                 <%= mapRatingToTextAndSmiley(review.rating).smiley %></h5>
+
+              <p class="card-text">Review: <%= review.body %> </p>
+       
+              <% if (currentUser && review.author && review.author.equals(currentUser._id)) { %>
+                <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+            <button class="btn btn-sm btn-danger">Delete</button>
+           
+           </form>
+          <% } %>
+         </div>
+      </div>
+      <% } %>
+    </div>
+</div>
+
+
+    <footer>
+        <a href="/campgrounds">All Campgrounds</a>
+    </footer>
